@@ -23,13 +23,12 @@ func Connect() {
 
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	fmt.Println("here", DB)
 	if err != nil {
 		log.Fatal("Failed to connect to database")
 	}
 
+	DB.AutoMigrate(models.User{})
 	DB.AutoMigrate(models.Account{})
 	DB.AutoMigrate(models.Transaction{})
 	DB.AutoMigrate(models.Transfer{})
-	DB.AutoMigrate(models.User{})
 }

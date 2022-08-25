@@ -9,8 +9,8 @@ type Phone struct {
 
 type User struct {
 	gorm.Model
-	Name    string    `gorm:"not null"`
-	Last    string    `gorm:"index;not null"`
-	Phone   Phone     `gorm:"embedded;unique;not null"`
-	Account []Account `gorm:"foreignKey:Owner"`
+	Name     string `gorm:"not null"`
+	Last     string `gorm:"index;not null"`
+	Phone    Phone  `gorm:"embedded;unique;not null"`
+	Accounts []Account
 }

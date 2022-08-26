@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"net/http"
-	"smallbank/main/initializers"
-	"smallbank/main/models"
+	"smallbank/server/initializers"
+	"smallbank/server/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,10 +29,10 @@ func CreateUser(c *gin.Context) {
 		Last:  body.Last,
 		Phone: models.Phone(*body.Phone),
 	}
-	newAccount := initializers.DB.Create(&user)
+	result := initializers.DB.Create(&user)
 
-	if newAccount.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while creating Account"})
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while creating user"})
 		return
 	}
 
@@ -93,9 +93,30 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	result = initializers.DB.Model(&user).Updates(models.User{Name: body.Name, Last: body.Last, Phone: models.Phone(*body.Phone)})
+	var Phone models.Phone
+	if body.Phone != nil {
+		Phone = models.Phone{
+			Code:   body.Phone.Code,
+			Number: body.Phone.Number,
+		}
+	}
+
+	result = initializers.DB.Model(&user).Updates(models.User{Name: body.Name, Last: body.Last, Phone: Phone})
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while retrieving user"})
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+
+	result := initializers.DB.Preload("Accounts").Delete(&models.User{}, id)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while deleting user"})
 		return
 	}
 

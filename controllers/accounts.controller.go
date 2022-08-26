@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"net/http"
-	"smallbank/main/initializers"
-	"smallbank/main/models"
+	"smallbank/server/initializers"
+	"smallbank/server/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -87,6 +87,19 @@ func UpdateAccount(c *gin.Context) {
 	result = initializers.DB.Model(&account).Updates(map[string]interface{}{"active": body.Active})
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while retrieving account"})
+		return
+	}
+
+	c.Status(http.StatusOK)
+}
+
+func DeleteAccount(c *gin.Context) {
+	id := c.Param("id")
+
+	result := initializers.DB.Delete(&models.Account{}, id)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while deleting account"})
 		return
 	}
 

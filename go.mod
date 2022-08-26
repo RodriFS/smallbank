@@ -1,4 +1,4 @@
-module smallbank/main
+module smallbank/server
 
 go 1.19
 

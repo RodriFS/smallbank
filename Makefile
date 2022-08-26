@@ -21,6 +21,6 @@ logdb:
 	docker logs $(DB)
 
 compile:
-	CompileDaemon -command="./main"
+	CompileDaemon -command="./server"
 
 .PHONY: rundb createdb dropdb migratedbup migratedbdown accessdb logdb compile

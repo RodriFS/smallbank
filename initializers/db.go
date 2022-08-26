@@ -5,8 +5,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
-	"smallbank/main/constants"
-	"smallbank/main/models"
+	"smallbank/server/constants"
+	"smallbank/server/models"
 )
 
 var DB *gorm.DB

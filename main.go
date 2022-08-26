@@ -1,9 +1,9 @@
 package main
 
 import (
-	"smallbank/main/constants"
-	"smallbank/main/controllers"
-	"smallbank/main/initializers"
+	"smallbank/server/constants"
+	"smallbank/server/controllers"
+	"smallbank/server/initializers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,11 +20,13 @@ func main() {
 	r.GET("/account", controllers.GetAccountList)
 	r.POST("/account", controllers.CreateAccount)
 	r.PUT("/account/:id", controllers.UpdateAccount)
+	r.DELETE("/account/:id", controllers.DeleteAccount)
 
 	r.GET("/user/:id", controllers.GetUser)
 	r.GET("/user", controllers.GetUserList)
 	r.POST("/user", controllers.CreateUser)
-	r.PUT("/user/:id", controllers.UpdateAccount)
+	r.PUT("/user/:id", controllers.UpdateUser)
+	r.DELETE("/user/:id", controllers.DeleteUser)
 
 	r.Run()
 }

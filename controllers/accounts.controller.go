@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"smallbank/server/datasources"
 	"smallbank/server/models"
 	"smallbank/server/utils"
 
@@ -21,17 +22,9 @@ func CreateAccount(c *gin.Context) {
 		return
 	}
 
-	result := db.First(&models.User{}, body.UserId)
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
-		return
-	}
-
-	account := models.Account{UserID: body.UserId}
-	result = db.Create(&account)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while creating account"})
+	account, err := datasources.CreateAccount(models.Account{UserID: body.UserId, Currency: body.Currency}, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -43,11 +36,9 @@ func CreateAccount(c *gin.Context) {
 func GetAccountList(c *gin.Context) {
 	db := utils.GetDB(c)
 
-	var accounts []models.Account
-	result := db.Find(&accounts)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving account list"})
+	accounts, err := datasources.FindAccounts(db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -59,11 +50,9 @@ func GetAccount(c *gin.Context) {
 
 	id := c.Param("id")
 
-	var account models.Account
-	result := db.First(&account, id)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving account"})
+	account, err := datasources.FirstAccount(id, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -84,17 +73,9 @@ func UpdateAccount(c *gin.Context) {
 		return
 	}
 
-	var account models.Account
-	result := db.First(&account, id)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving account"})
-		return
-	}
-
-	result = db.Model(&account).Updates(map[string]interface{}{"active": body.Active})
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while retrieving account"})
+	err := datasources.UpdateAccount(id, map[string]any{"Active": body.Active}, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -106,10 +87,9 @@ func DeleteAccount(c *gin.Context) {
 
 	id := c.Param("id")
 
-	result := db.Delete(&models.Account{}, id)
-
-	if result.Error != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while deleting account"})
+	err := datasources.DeleteAccount(id, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

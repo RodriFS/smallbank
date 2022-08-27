@@ -1,13 +1,12 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
+	"smallbank/server/datasources"
 	"smallbank/server/models"
 	"smallbank/server/utils"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func CreateTransfer(c *gin.Context) {
@@ -25,20 +24,14 @@ func CreateTransfer(c *gin.Context) {
 		return
 	}
 
-	var result *gorm.DB
-	for _, userId := range []uint{body.From, body.To} {
-		result = db.First(&models.User{}, userId)
-		if result.Error != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("User %d not found", userId)})
-			return
-		}
-	}
-
-	transfer := models.Transfer{ToAccountId: body.To, FromAccountId: body.From, Amount: body.Amount, Currency: body.Currency}
-	result = db.Create(&transfer)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while creating transfer"})
+	transfer, err := datasources.CreateTransfer(models.Transfer{
+		FromAccountId: body.From,
+		ToAccountId:   body.To,
+		Amount:        body.Amount,
+		Currency:      body.Currency,
+	}, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -52,11 +45,9 @@ func GetTransferList(c *gin.Context) {
 
 	userId := c.Param("UserId")
 
-	var transfers []models.Transfer
-	result := db.Find(&transfers, userId)
-
-	if result.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving transfer  list"})
+	transfers, err := datasources.FindTransfers(userId, db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

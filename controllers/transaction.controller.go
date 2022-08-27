@@ -42,8 +42,10 @@ func CreateTransaction(c *gin.Context) {
 }
 
 func GetTransactionList(c *gin.Context) {
+	userId := c.Param("UserId")
+
 	var transactions []models.Transaction
-	result := initializers.DB.Find(&transactions)
+	result := initializers.DB.Find(&transactions, userId)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving transactions list"})

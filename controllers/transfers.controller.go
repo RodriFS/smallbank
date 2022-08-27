@@ -46,8 +46,10 @@ func CreateTransfer(c *gin.Context) {
 }
 
 func GetTransferList(c *gin.Context) {
+	userId := c.Param("UserId")
+
 	var transfers []models.Transfer
-	result := initializers.DB.Find(&transfers)
+	result := initializers.DB.Find(&transfers, userId)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving transfer  list"})

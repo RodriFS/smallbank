@@ -16,17 +16,22 @@ func init() {
 
 func main() {
 	r := gin.Default()
-	r.GET("/account/:id", controllers.GetAccount)
-	r.GET("/account", controllers.GetAccountList)
-	r.POST("/account", controllers.CreateAccount)
-	r.PUT("/account/:id", controllers.UpdateAccount)
-	r.DELETE("/account/:id", controllers.DeleteAccount)
+	r.GET("/accounts/:id", controllers.GetAccount)
+	r.GET("/accounts", controllers.GetAccountList)
+	r.POST("/accounts", controllers.CreateAccount)
+	r.PUT("/accounts/:id", controllers.UpdateAccount)
+	r.DELETE("/accounts/:id", controllers.DeleteAccount)
 
-	r.GET("/user/:id", controllers.GetUser)
-	r.GET("/user", controllers.GetUserList)
-	r.POST("/user", controllers.CreateUser)
-	r.PUT("/user/:id", controllers.UpdateUser)
-	r.DELETE("/user/:id", controllers.DeleteUser)
+	r.GET("/users/:id", controllers.GetUser)
+	r.GET("/users", controllers.GetUserList)
+	r.POST("/users", controllers.CreateUser)
+	r.PUT("/users/:id", controllers.UpdateUser)
+	r.DELETE("/users/:id", controllers.DeleteUser)
 
+	r.GET("/transfers/:UserId", controllers.GetTransferList)
+	r.POST("/transfers", controllers.CreateTransfer)
+
+	r.GET("/transactions/:UserId", controllers.GetTransactionList)
+	r.POST("/transactions", controllers.CreateTransaction)
 	r.Run()
 }

@@ -1,0 +1,64 @@
+{
+	"info": {
+		"_postman_id": "02f75d11-a1ed-49dd-9508-6adb8bb772c2",
+		"name": "Transfers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5074932"
+	},
+	"item": [
+		{
+			"name": "Create Transfer",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"from\": 1,\n    \"to\": 2,\n    \"amount\": 100,\n    \"currency\": \"EUR\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/transfers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"transfers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Transfer List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/transfers/:userId",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"transfers",
+						":userId"
+					],
+					"variable": [
+						{
+							"key": "userId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

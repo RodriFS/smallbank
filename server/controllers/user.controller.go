@@ -2,13 +2,15 @@ package controllers
 
 import (
 	"net/http"
-	"smallbank/server/initializers"
 	"smallbank/server/models"
+	"smallbank/server/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateUser(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	type phone struct {
 		Code   int   `binding:"required"`
 		Number int32 `binding:"required"`
@@ -29,7 +31,7 @@ func CreateUser(c *gin.Context) {
 		Last:  body.Last,
 		Phone: models.Phone(*body.Phone),
 	}
-	result := initializers.DB.Create(&user)
+	result := db.Create(&user)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while creating user"})
@@ -42,8 +44,10 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUserList(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	var users []models.User
-	result := initializers.DB.Find(&users)
+	result := db.Find(&users)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving user list"})
@@ -54,10 +58,12 @@ func GetUserList(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	id := c.Param("id")
 
 	var user models.User
-	result := initializers.DB.Preload("Accounts").First(&user, id)
+	result := db.Preload("Accounts").First(&user, id)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving user"})
@@ -68,7 +74,10 @@ func GetUser(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	id := c.Param("id")
+
 	type phone struct {
 		Code   int
 		Number int32
@@ -86,7 +95,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	var user models.User
-	result := initializers.DB.First(&user, id)
+	result := db.First(&user, id)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving user"})
@@ -101,7 +110,7 @@ func UpdateUser(c *gin.Context) {
 		}
 	}
 
-	result = initializers.DB.Model(&user).Updates(models.User{Name: body.Name, Last: body.Last, Phone: Phone})
+	result = db.Model(&user).Updates(models.User{Name: body.Name, Last: body.Last, Phone: Phone})
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while retrieving user"})
 		return
@@ -111,9 +120,11 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	id := c.Param("id")
 
-	result := initializers.DB.Preload("Accounts").Delete(&models.User{}, id)
+	result := db.Preload("Accounts").Delete(&models.User{}, id)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while deleting user"})

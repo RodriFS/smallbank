@@ -2,13 +2,15 @@ package controllers
 
 import (
 	"net/http"
-	"smallbank/server/initializers"
 	"smallbank/server/models"
+	"smallbank/server/utils"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateAccount(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	var body struct {
 		UserId   uint `binding:"required"`
 		Currency string
@@ -19,14 +21,14 @@ func CreateAccount(c *gin.Context) {
 		return
 	}
 
-	result := initializers.DB.First(&models.User{}, body.UserId)
+	result := db.First(&models.User{}, body.UserId)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
 
 	account := models.Account{UserID: body.UserId}
-	result = initializers.DB.Create(&account)
+	result = db.Create(&account)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while creating account"})
@@ -39,8 +41,10 @@ func CreateAccount(c *gin.Context) {
 }
 
 func GetAccountList(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	var accounts []models.Account
-	result := initializers.DB.Find(&accounts)
+	result := db.Find(&accounts)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving account list"})
@@ -51,10 +55,12 @@ func GetAccountList(c *gin.Context) {
 }
 
 func GetAccount(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	id := c.Param("id")
 
 	var account models.Account
-	result := initializers.DB.First(&account, id)
+	result := db.First(&account, id)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving account"})
@@ -65,6 +71,8 @@ func GetAccount(c *gin.Context) {
 }
 
 func UpdateAccount(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	id := c.Param("id")
 
 	var body struct {
@@ -77,14 +85,14 @@ func UpdateAccount(c *gin.Context) {
 	}
 
 	var account models.Account
-	result := initializers.DB.First(&account, id)
+	result := db.First(&account, id)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while retrieving account"})
 		return
 	}
 
-	result = initializers.DB.Model(&account).Updates(map[string]interface{}{"active": body.Active})
+	result = db.Model(&account).Updates(map[string]interface{}{"active": body.Active})
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while retrieving account"})
 		return
@@ -94,9 +102,11 @@ func UpdateAccount(c *gin.Context) {
 }
 
 func DeleteAccount(c *gin.Context) {
+	db := utils.GetDB(c)
+
 	id := c.Param("id")
 
-	result := initializers.DB.Delete(&models.Account{}, id)
+	result := db.Delete(&models.Account{}, id)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error while deleting account"})

@@ -8,8 +8,14 @@ killdb:
 createdb:
 	docker exec -it $(DB) createdb --username=admin --owner=admin small_bank
 
+createtestdb:
+	docker exec -it $(DB) createdb --username=admin --owner=admin testing
+
 dropdb:
 	docker exec -it $(DB) dropdb -U admin small_bank
+
+dropdb:
+	docker exec -it $(DB) dropdb -U admin testing
 
 accessdb:
 	docker exec -it $(DB) psql -U admin smal_bank

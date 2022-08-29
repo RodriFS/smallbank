@@ -43,9 +43,9 @@ func CreateTransfer(c *gin.Context) {
 func GetTransferList(c *gin.Context) {
 	db := utils.GetDB(c)
 
-	userId := c.Param("UserId")
+	accountId := c.Param("AccountId")
 
-	transfers, err := datasources.FindTransfers(userId, db)
+	transfers, err := datasources.FindTransfersByAccountId(accountId, db)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

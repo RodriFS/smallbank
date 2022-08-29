@@ -45,7 +45,7 @@ func CreateTransfer(transfer models.Transfer, db *gorm.DB) (models.Transfer, err
 	return transfer, err
 }
 
-func FindTransfers(accountId string, db *gorm.DB) ([]models.Transfer, error) {
+func FindTransfersByAccountId(accountId string, db *gorm.DB) ([]models.Transfer, error) {
 	var transfers []models.Transfer
 	result := db.Where("from_account_id = ?", accountId).Or("to_account_id = ?", accountId).Find(&transfers)
 	if result.Error != nil {

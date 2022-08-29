@@ -37,7 +37,7 @@ func Test_CreateTransfer_NoError(t *testing.T) {
 	setup.CleanUpTestDB(db)
 }
 
-func Test_CreateTransfer_UserFromNotFound(t *testing.T) {
+func Test_CreateTransfer_AccountFromNotFound(t *testing.T) {
 	db := setup.SetupTestDB()
 
 	datasources.CreateUser(models.User{}, db)
@@ -57,7 +57,7 @@ func Test_CreateTransfer_UserFromNotFound(t *testing.T) {
 	setup.CleanUpTestDB(db)
 }
 
-func Test_CreateTransfer_UserToNotFound(t *testing.T) {
+func Test_CreateTransfer_AccountToNotFound(t *testing.T) {
 	db := setup.SetupTestDB()
 
 	datasources.CreateUser(models.User{}, db)
@@ -170,7 +170,7 @@ func Test_FindTransfers_NoError(t *testing.T) {
 	datasources.CreateTransfer(models.Transfer{FromAccountId: 1, ToAccountId: 2, Amount: 10}, db)
 	datasources.CreateTransfer(models.Transfer{FromAccountId: 2, ToAccountId: 1, Amount: 10}, db)
 
-	transfers, err := datasources.FindTransfers("1", db)
+	transfers, err := datasources.FindTransfersByAccountId("1", db)
 
 	if err != nil {
 		t.Errorf("expected no error, got %q", err)

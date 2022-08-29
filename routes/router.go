@@ -31,9 +31,9 @@ func initializeRoutes(router *gin.Engine) {
 	router.PUT("/users/:id", controllers.UpdateUser)
 	router.DELETE("/users/:id", controllers.DeleteUser)
 
-	router.GET("/transfers/:UserId", controllers.GetTransferList)
+	router.GET("/transfers/:AccountId", controllers.GetTransferList)
 	router.POST("/transfers", controllers.CreateTransfer)
 
-	router.GET("/transactions/:UserId", controllers.GetTransactionList)
+	router.GET("/transactions/:AccountId", controllers.GetTransactionList)
 	router.POST("/transactions", controllers.CreateTransaction)
 }

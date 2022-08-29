@@ -42,9 +42,9 @@ func CreateTransaction(c *gin.Context) {
 func GetTransactionList(c *gin.Context) {
 	db := utils.GetDB(c)
 
-	userId := c.Param("UserId")
+	accountId := c.Param("AccountId")
 
-	transactions, err := datasources.FindTransactions(userId, db)
+	transactions, err := datasources.FindTransactionsByAccountId(accountId, db)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

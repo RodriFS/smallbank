@@ -105,7 +105,7 @@ func Test_FirstAccount_NoError(t *testing.T) {
 	}
 
 	if account.ID != 1 {
-		t.Errorf("expected account wuth id 1, got %d", account.ID)
+		t.Errorf("expected account with id 1, got %d", account.ID)
 	}
 
 	setup.CleanUpTestDB(db)

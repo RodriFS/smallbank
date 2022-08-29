@@ -1,7 +1,6 @@
 package datasources
 
 import (
-	"errors"
 	"smallbank/server/models"
 
 	"gorm.io/gorm"
@@ -10,7 +9,7 @@ import (
 func CreateUser(user models.User, db *gorm.DB) (models.User, error) {
 	result := db.Create(&user)
 	if result.Error != nil {
-		return models.User{}, errors.New("Error while creating user")
+		return models.User{}, result.Error
 	}
 
 	return user, nil
@@ -21,7 +20,7 @@ func FindUsers(db *gorm.DB) ([]models.User, error) {
 	result := db.Find(&users)
 
 	if result.Error != nil {
-		return nil, errors.New("Error while retrieving user list")
+		return nil, result.Error
 	}
 
 	return users, nil
@@ -32,7 +31,7 @@ func FirstUser(id string, db *gorm.DB) (models.User, error) {
 	result := db.Preload("Accounts").First(&user, id)
 
 	if result.Error != nil {
-		return models.User{}, errors.New("Error while retrieving user")
+		return models.User{}, result.Error
 	}
 
 	return user, nil
@@ -43,12 +42,12 @@ func UpdateUser(id string, user map[string]any, db *gorm.DB) error {
 	result := db.First(&existingUser, id)
 
 	if result.Error != nil {
-		return errors.New("Error while retrieving user")
+		return result.Error
 	}
 
 	result = db.Model(&existingUser).Updates(&user)
 	if result.Error != nil {
-		return errors.New("Error while retrieving user")
+		return result.Error
 	}
 
 	return nil

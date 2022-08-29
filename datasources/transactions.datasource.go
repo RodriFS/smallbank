@@ -1,7 +1,6 @@
 package datasources
 
 import (
-	"errors"
 	"smallbank/server/models"
 
 	"gorm.io/gorm"
@@ -34,7 +33,7 @@ func FindTransactions(userId string, db *gorm.DB) ([]models.Transaction, error) 
 	result := db.Find(&transactions, userId)
 
 	if result.Error != nil {
-		return nil, errors.New("Error while retrieving transactions list")
+		return nil, result.Error
 	}
 
 	return transactions, nil

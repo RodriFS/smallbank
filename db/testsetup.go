@@ -3,12 +3,14 @@ package db
 import (
 	"fmt"
 	"log"
+	"os"
 	"smallbank/server/config"
 	"smallbank/server/initializers"
 	"smallbank/server/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func init() {
@@ -21,7 +23,16 @@ func SetupTestDB() (conn *gorm.DB) {
 	connString := fmt.Sprintf("postgres://%s:%s@%s:%s/testing?sslmode=disable",
 		cred["user"], cred["password"], cred["host"], cred["port"])
 
-	db, err := gorm.Open(postgres.Open(connString))
+	newLogger := logger.New(
+		log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			LogLevel: logger.Silent,
+		},
+	)
+
+	db, err := gorm.Open(postgres.Open(connString), &gorm.Config{
+		Logger: newLogger,
+	})
 
 	if err != nil {
 		log.Fatal("Unable to connect to DB")

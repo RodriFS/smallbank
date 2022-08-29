@@ -14,7 +14,7 @@ createtestdb:
 dropdb:
 	docker exec -it $(DB) dropdb -U admin small_bank
 
-dropdb:
+droptestdb:
 	docker exec -it $(DB) dropdb -U admin testing
 
 accessdb:
@@ -26,4 +26,7 @@ logdb:
 compile:
 	CompileDaemon -command="./server"
 
-.PHONY: rundb killdb createdb dropdb accessdb logdb compile
+test:
+	go test -v ./...
+
+.PHONY: rundb killdb createdb createtestdb dropdb droptestdb accessdb logdb compile test

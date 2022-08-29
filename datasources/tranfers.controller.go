@@ -9,26 +9,38 @@ import (
 )
 
 func CreateTransfer(transfer models.Transfer, db *gorm.DB) (models.Transfer, error) {
-	for _, userId := range []uint{transfer.FromAccountId, transfer.ToAccountId} {
-		result := db.First(&models.User{}, userId)
-		if result.Error != nil {
-			return models.Transfer{}, errors.New(fmt.Sprintf("User %d not found", userId))
+	err := db.Transaction(func(tx *gorm.DB) error {
+		for _, userId := range []uint{transfer.FromAccountId, transfer.ToAccountId} {
+			if err := tx.First(&models.User{}, userId).Error; err != nil {
+				return errors.New(fmt.Sprintf("User %d: %q", userId, err))
+			}
 		}
-	}
 
-	result := db.Create(&transfer)
-	if result.Error != nil {
-		return models.Transfer{}, errors.New("Error while creating transfer")
-	}
+		if err := tx.Create(&transfer).Error; err != nil {
+			return err
+		}
 
-	return transfer, nil
+		var receivingAccount models.Account
+		if err := tx.First(&receivingAccount, transfer.ToAccountId).Error; err != nil {
+			return err
+		}
+
+		receivingAccount.Balance += transfer.Amount
+		if err := tx.Save(&receivingAccount).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return transfer, err
 }
 
 func FindTransfers(userId string, db *gorm.DB) ([]models.Transfer, error) {
 	var transfers []models.Transfer
 	result := db.Find(&transfers, userId)
 	if result.Error != nil {
-		return nil, errors.New("Error while retrieving transfer  list")
+		return nil, result.Error
 	}
 
 	return transfers, nil

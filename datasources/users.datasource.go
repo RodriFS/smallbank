@@ -55,19 +55,15 @@ func UpdateUser(id string, user map[string]any, db *gorm.DB) error {
 }
 
 func DeleteUser(id string, db *gorm.DB) error {
-	tx := db.Session(&gorm.Session{SkipDefaultTransaction: true})
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("user_id = ?", id).Delete(&models.Account{}).Error; err != nil {
+			return err
+		}
 
-	result := tx.Where("user_id = ?", id).Delete(&models.Account{})
+		if err := tx.Delete(&models.User{}, id).Error; err != nil {
+			return err
+		}
 
-	if result.Error != nil {
-		return errors.New("Error while deleting user")
-	}
-
-	result = tx.Delete(&models.User{}, id)
-
-	if result.Error != nil {
-		return errors.New("Error while deleting user")
-	}
-
-	return nil
+		return nil
+	})
 }

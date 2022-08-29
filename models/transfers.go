@@ -18,5 +18,10 @@ func (t *Transfer) BeforeCreate(tx *gorm.DB) (err error) {
 	if t.Amount <= 0 {
 		err = errors.New("Can't transfer 0 or less amount")
 	}
+
+	if t.FromAccountId == t.ToAccountId {
+		err = errors.New("A user can't make a transfer to itself")
+	}
+
 	return
 }

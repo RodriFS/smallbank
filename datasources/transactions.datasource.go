@@ -8,17 +8,25 @@ import (
 )
 
 func CreateTransaction(transaction models.Transaction, db *gorm.DB) (models.Transaction, error) {
-	result := db.First(&models.Account{}, transaction.AccountID)
-	if result.Error != nil {
-		return models.Transaction{}, errors.New("Account not found")
-	}
+	err := db.Transaction(func(tx *gorm.DB) error {
+		var account models.Account
+		if err := tx.First(&account, transaction.AccountID).Error; err != nil {
+			return err
+		}
 
-	result = db.Create(&transaction)
-	if result.Error != nil {
-		return models.Transaction{}, errors.New("Error while creating transaction")
-	}
+		if err := tx.Create(&transaction).Error; err != nil {
+			return err
+		}
 
-	return transaction, nil
+		account.Balance += transaction.Amount
+		if err := tx.Save(&account).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return transaction, err
 }
 
 func FindTransactions(userId string, db *gorm.DB) ([]models.Transaction, error) {

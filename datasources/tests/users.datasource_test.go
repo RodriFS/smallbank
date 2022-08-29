@@ -64,7 +64,7 @@ func Test_FindUser_NoError(t *testing.T) {
 	}
 
 	if len(users) != 2 {
-		t.Errorf("expected 2 userss, got %d", len(users))
+		t.Errorf("expected 2 users, got %d", len(users))
 	}
 
 	setup.CleanUpTestDB(db)
